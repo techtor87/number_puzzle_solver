@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 
+from helper_functions import *
+
 def enum(**named_values):
    return type('Enum', (), named_values)
 
@@ -19,11 +21,12 @@ def init_clues ():
    global puzzle_clue_horizontal
    global puzzle_clue_verticle
    global puzzle_solve
-   puzzle_size = 25
    puzzle_max_size= 25
    puzzle_clue_horizontal = []
    puzzle_clue_verticle = []
    puzzle_solve = []
+
+   set_helper_globals(puzzle_solve, puzzle_size)
 
    for i in range(puzzle_max_size):
        puzzle_clue_horizontal.append(0)
@@ -34,13 +37,14 @@ def start_puzzle(size, diff):
       size = 0
       diff = 0
 
-   init_clues()
    global puzzle_size
    global puzzle_clue_horizontal
    global puzzle_clue_verticle
    global driver
 
    puzzle_size = 5*size + 5
+
+   init_clues()
 
    for i in range(puzzle_size):
       puzzle_row = []
@@ -93,6 +97,7 @@ def init_solve_table():
    for line in puzzle_clue_verticle:
       solve_guessing('c', puzzle_size, line, col_index)
       col_index += 1
+
 def solve_table_edges():
    row_index = 0
    col_index = 0
@@ -103,6 +108,7 @@ def solve_table_edges():
    for line in puzzle_clue_verticle:
       solve_edge('c', puzzle_size, line, col_index)
       col_index += 1
+
 def solve_table():
    row_index = 0
    col_index = 0
@@ -168,7 +174,7 @@ def solve_guessing(dir, size, clue, line_num):
 
       if space_for_clue:
          for i in range(clue[clue_indx]):
-            guess_mark(dir, line_num,index,clue_indx)
+            compare_mark(dir, line_num,index,clue_indx)
             index -= 1
          clue_indx -= 1
       #else:
@@ -230,6 +236,7 @@ def solve_edge(dir, size, clue, line_num):
          start_mark = True
       if start_mark:
          mark_known(dir, line_num,indx)
+
 def solve_line(dir, size, clue, line_num):
    if line_num >= size:
       return
@@ -300,134 +307,6 @@ def solve_line(dir, size, clue, line_num):
       for indx in range(size):
          if is_unknown(dir, line_num, indx):
             blank_known(dir, line_num,indx)
-         
-def promote_to_known(dir, i, j):
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if (dir == 'r'):
-         if puzzle_solve[i][j] == 'm':
-            puzzle_solve[i][j] = 'M'
-         elif puzzle_solve[i][j] == 'b':
-            puzzle_solve[i][j] = '0'
-      elif dir == 'c':
-         if puzzle_solve[j][i] == 'm':
-            puzzle_solve[j][i] = 'M'
-         elif puzzle_solve[j][i] == 'b':
-            puzzle_solve[j][i] = '0'
-def clear_unknown(dir, i,j):
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         if puzzle_solve[i][j] != 'M' and puzzle_solve[i][j] != '0':
-            puzzle_solve[i][j] = '_'
-      if dir == 'c':
-         if puzzle_solve[j][i] != 'M' and puzzle_solve[j][i] != '0':
-            puzzle_solve[j][i] = '_'
-def guess_mark(dir, i,j,mark=''):
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         if puzzle_solve[i][j] != 'M' and puzzle_solve[i][j] != '0':
-            if puzzle_solve[i][j] == '_':
-               puzzle_solve[i][j] = 'm' + str(mark)
-            #else:
-            #   puzzle_solve[i][j] += ' m' + str(mark)
-      elif dir == 'c':
-         if puzzle_solve[j][i] != 'M' and puzzle_solve[j][i] != '0':
-            if puzzle_solve[j][i] == '_':
-               puzzle_solve[j][i] = 'm' + str(mark)
-            #else:
-            #   puzzle_solve[j][i] += ' m' + str(mark)
-def guess_blank(dir, i,j,blank=''):
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         if puzzle_solve[i][j] != 'M' and puzzle_solve[i][j] != '0':
-            puzzle_solve[i][j] = 'b' + str(blank)
-      elif dir == 'c':
-         if puzzle_solve[j][i] != 'M' and puzzle_solve[j][i] != '0':
-            puzzle_solve[j][i] = 'b' + str(blank)
-def mark_known(dir, i,j):
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         puzzle_solve[i][j] = 'M'
-      elif dir == 'c':
-         puzzle_solve[j][i] = 'M'
-def blank_known(dir, i,j):
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         puzzle_solve[i][j] = '0'
-      elif dir == 'c':
-         puzzle_solve[j][i] = '0'
-def compare_mark(dir, i,j,mark=''):  
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      #if dir == 'r':
-      #   str_list = puzzle_solve[i][j].split(' ')
-      #   if len(str_list) > 1:
-      #      if str_list[0] == str_list[1]:
-      #         puzzle_solve[i][j] = 'M'
-      #if dir == 'c':
-      #   str_list = puzzle_solve[j][i].split(' ')
-      #   if len(str_list) > 1:
-      #      if str_list[0] == str_list[1]:
-      #         puzzle_solve[j][i] = 'M'
-
-      mark_test = 'm' + str(mark)
-      if dir == 'r':
-         if puzzle_solve[i][j] == mark_test:
-            puzzle_solve[i][j] = 'M'
-      elif dir == 'c':
-         if puzzle_solve[j][i] == mark_test:
-            puzzle_solve[j][i] = 'M'
-def compare_blank(dir, i,j,mark=''):  
-   global puzzle_solve
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      mark_test = 'b' + str(mark)
-      if puzzle_solve[i][j] == mark_test:
-         if dir == 'r':
-            puzzle_solve[i][j] = '0'
-         elif dir == 'c':
-            puzzle_solve[j][i] = '0'
-         
-def is_mark(dir, i,j):
-   global puzzle_solve
-   is_mark = False
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         if puzzle_solve[i][j] == 'M':
-            is_mark = True
-      if dir == 'c':
-         if puzzle_solve[j][i] == 'M':
-            is_mark = True
-
-   return is_mark
-def is_blank(dir, i,j):
-   global puzzle_solve
-   is_blank = False
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         if puzzle_solve[i][j] == '0':
-            is_blank = True
-      if dir == 'c':
-         if puzzle_solve[j][i] == '0':
-            is_blank = True
-
-   return is_blank
-def is_unknown(dir, i,j):
-   global puzzle_solve
-   is_unknown = False
-   if i < puzzle_size and j < puzzle_size and i >= 0 and j >= 0:
-      if dir == 'r':
-         if puzzle_solve[i][j] == '_':
-            is_unknown = True
-      if dir == 'c':
-         if puzzle_solve[j][i] == '_':
-            is_unknown = True
-
-   return is_unknown
 
 def print_puzzle(size, puzzle):
    lead_str  = "    "
@@ -486,7 +365,7 @@ def read_puzzle():
                blank_known('r', y-1, x-1)
 
 
-start_puzzle(size.FIFTEEN,difficulty.DIFFICULT)
+start_puzzle(size.FIFTEEN,difficulty.MODERATE)
 clues_remaining = 1
 while(clues_remaining > 0):
    #sys.stdout = open('solve_step_{}.txt'.format(i),'w')
@@ -499,22 +378,6 @@ while(clues_remaining > 0):
    submit_puzzle()
    clues_remaining = remaining_clues(puzzle_size, puzzle_solve)
    print clues_remaining
-   sleep(2.5)
-   #try:
-   #   m, x, y = raw_input("solve x y:").split(' ')
-   #except ValueError:
-   #   m = None
-   
-   #if m == 'm' or m == 'M':
-   #   if is_unknown('r',int(x),int(y)):
-   #      mark_known('r', int(x),int(y))
-   #elif m == 'b' or m == '0':
-   #   if is_unknown('r',int(x),int(y)):
-   #      blank_known('r', int(x),int(y))
-   #elif m == 's' or m == 'S':
-   #   submit_puzzle(puzzle_size, puzzle_solve)
-   #elif m == 'e' or m == 'E':
-   #   break
-   #else:
-   #   print '{} is not a valid command'.format(m)
+   sleep(5)
+
    #sys.stdout.close()

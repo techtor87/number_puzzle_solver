@@ -24,6 +24,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="helper_functions.py" />
     <Compile Include="mouse_control.py" />
     <Compile Include="number_puzzle_solver.py" />
     <Compile Include="webSolver.py" />
