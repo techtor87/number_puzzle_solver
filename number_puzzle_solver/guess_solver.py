@@ -28,9 +28,10 @@ def solve_guessing(dir, size, clue, line_num):
 
    #Guess Forward
    index = 0
+   clue_indx = 0
    while clue_indx < len(clue):
       space_for_clue = True
-      for check_indx in range(clue[clue_indx]):
+      for check_index in range(clue[clue_indx]):
          if is_blank(dir, line_num, index + check_index):
             space_for_clue = False
             break
@@ -48,7 +49,7 @@ def solve_guessing(dir, size, clue, line_num):
    clue_indx = len(clue) - 1
    while clue_indx >= 0:
       space_for_clue = True
-      for check_indx in range(clue[clue_indx]):
+      for check_index in range(clue[clue_indx]):
          if is_blank(dir, line_num, index - check_index):
             space_for_clue = False
             break

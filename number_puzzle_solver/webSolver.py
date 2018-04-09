@@ -25,6 +25,7 @@ def init_clues ():
    global puzzle_clue_horizontal
    global puzzle_clue_verticle
    global puzzle_solve
+   global driver
    puzzle_max_size= 25
    puzzle_clue_horizontal = []
    puzzle_clue_verticle = []
@@ -37,9 +38,24 @@ def init_clues ():
    
    for i in range(puzzle_max_size):
        puzzle_clue_horizontal.append(0)
-       puzzle_clue_verticle.append(0)
+       puzzle_clue_verticle.append(0) 
+   
+   for i in range(puzzle_size):
+      puzzle_row = []
+      for j in range(puzzle_size):
+         puzzle_row.append('_')
+      puzzle_solve.append(puzzle_row)
 
-def start_puzzle(size, diff, user=None, passwd=None):
+   for y in range(1, puzzle_size+1):
+      id_str = "X0Y" + str(y)
+      puzzle_clue_horizontal[y-1] = map(int, driver.find_element_by_id(id_str).text.split(','))
+
+   for x in range(1, puzzle_size+1):
+      id_str = "X" + str(x) + "Y0"
+      temp_str =  driver.find_element_by_id(id_str).text
+      puzzle_clue_verticle[x-1] = map(int, temp_str.split('\n'))
+
+def puzzle_login(size, diff, user=None, passwd=None):
    if size > 4 or diff > 4 or size < 0 or diff < 0:
       size = 0
       diff = 0
@@ -50,14 +66,6 @@ def start_puzzle(size, diff, user=None, passwd=None):
    global driver
 
    puzzle_size = 5*size + 5
-
-   init_clues()
-
-   for i in range(puzzle_size):
-      puzzle_row = []
-      for j in range(puzzle_size):
-         puzzle_row.append('_')
-      puzzle_solve.append(puzzle_row)
 
    opts = ChromeOptions()
    opts.add_extension("C:/Users/210060583/AppData/Local/Google/Chrome/User Data/Default/Extensions/gighmmpiobklfepjocnamgkkbiglidom/3.27.0_0.crx")
@@ -89,20 +97,44 @@ def start_puzzle(size, diff, user=None, passwd=None):
    #Using Action Class
    ActionChains(driver).drag_and_drop_by_offset(size_slider, 50*(size-2), 0).perform()
    ActionChains(driver).drag_and_drop_by_offset(difficulty_slider, 50*(diff-2), 0).perform()
-  
+   
+   if size == 0:
+      expected_size = "5 x 5"
+   elif size == 1:
+      expected_size = "10 x 10"
+   elif size == 2:
+      expected_size = "15 x 15"
+   elif size == 3:
+      expected_size = "20 x 20"
+   elif size == 4:
+      expected_size = "25 x 25"
+   else:
+      expected_size = "not found"
+   if str(driver.find_element_by_id("sel_grid").text) != expected_size:
+      print "Grid size not correctly set"
+      return -1
+   
+   if diff == 0:
+      expected_diff = "Very Easy"
+   elif diff == 1:
+      expected_diff = "Moderate"
+   elif diff == 2:
+      expected_diff = "Challenging"
+   elif diff == 3:
+      expected_diff = "Difficult"
+   elif diff == 4:
+      expected_diff = "Fiendish"
+   else:
+      expected_diff = "not found"
+   if str(driver.find_element_by_id("sel_diff").text) != expected_diff:
+      print "Grid difficulty not correctly set"
+      return -1
+
    driver.find_element_by_name("CreatePuzzle").click()
 
    #Confirm Puzzle Page
    driver.find_element_by_name("submit").click()
    
-   for y in range(1, puzzle_size+1):
-      id_str = "X0Y" + str(y)
-      puzzle_clue_horizontal[y-1] = map(int, driver.find_element_by_id(id_str).text.split(','))
-
-   for x in range(1, puzzle_size+1):
-      id_str = "X" + str(x) + "Y0"
-      temp_str =  driver.find_element_by_id(id_str).text
-      puzzle_clue_verticle[x-1] = map(int, temp_str.split('\n'))
 
 def print_puzzle(size, puzzle):
    lead_str  = "    "
@@ -166,16 +198,20 @@ def read_puzzle():
 if __name__ == "__main__":
 
    parser = argparse.ArgumentParser()
-   #
-   # define each option with: parser.add_argument
-   #
-   parser.add_argument('-s', '--size', required=True)
-   parser.add_argument('-d', '--difficulty', required=True)
+
+   parser.add_argument('-s', '--size', type=int, required=True)
+   parser.add_argument('-d', '--difficulty', type=int, required=True)
    parser.add_argument('-u', '--user', required=False)
    parser.add_argument('-p', '--password', required=False)
-   args = parser.parse_args() # automatically looks at sys.arvg
+   args = parser.parse_args() 
 
-   start_puzzle(args.size, args.difficulty, args.user, args.password)
+   print args.size
+   print args.difficulty
+
+   if puzzle_login(args.size, args.difficulty, args.user, args.password) is -1:
+       quit() 
+
+   init_clues()
    clues_remaining = 1
    while(clues_remaining > 0):
       print "starting loop"
