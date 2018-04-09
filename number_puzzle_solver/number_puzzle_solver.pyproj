@@ -18,7 +18,7 @@
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <Environment>
     </Environment>
-    <CommandLineArguments>-s 0 -d 0 -u gregnog -p adel13phikos</CommandLineArguments>
+    <CommandLineArguments>-s 0 -d 0</CommandLineArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,7 +29,16 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="edge_solver.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="guess_solver.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="helper_functions.py" />
+    <Compile Include="line_solver.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="mouse_control.py" />
     <Compile Include="number_puzzle_solver.py" />
     <Compile Include="webSolver.py" />
