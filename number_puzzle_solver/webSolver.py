@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import argparse
 from time import sleep
 
 from helper_functions import *
@@ -364,20 +365,35 @@ def read_puzzle():
             elif "marked2" in element.get_attribute('class'):
                blank_known('r', y-1, x-1)
 
+if __name__ == "__main__":
 
-start_puzzle(size.FIFTEEN,difficulty.MODERATE)
-clues_remaining = 1
-while(clues_remaining > 0):
-   #sys.stdout = open('solve_step_{}.txt'.format(i),'w')
-   print "starting loop"
-   read_puzzle()
-   init_solve_table()
-   solve_table_edges()
-   solve_table()
-   #print_puzzle(puzzle_size, puzzle_solve)
-   submit_puzzle()
-   clues_remaining = remaining_clues(puzzle_size, puzzle_solve)
-   print clues_remaining
-   sleep(5)
+   parser = argparse.ArgumentParser()
+   #
+   # define each option with: parser.add_argument
+   #
+   parser.add_argument('-s', '--size', required=True)
+   parser.add_argument('-d', '--difficulty', required=True)
+   parser.add_argument('-u', '--user', required=True)
+   parser.add_argument('-p', '--password', required=True)
+   args = parser.parse_args() # automatically looks at sys.arvg
+   #
+   # access results with: args.argumentName
+   #
 
-   #sys.stdout.close()
+
+   start_puzzle(args.size, args.difficulty)
+   clues_remaining = 1
+   while(clues_remaining > 0):
+      #sys.stdout = open('solve_step_{}.txt'.format(i),'w')
+      print "starting loop"
+      read_puzzle()
+      init_solve_table()
+      solve_table_edges()
+      solve_table()
+      #print_puzzle(puzzle_size, puzzle_solve)
+      submit_puzzle()
+      clues_remaining = remaining_clues(puzzle_size, puzzle_solve)
+      print clues_remaining
+      sleep(5)
+
+      #sys.stdout.close()
