@@ -18,7 +18,7 @@
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <Environment>
     </Environment>
-    <CommandLineArguments>-s 0 -d 0 -u gregnog -p 123456</CommandLineArguments>
+    <CommandLineArguments>-s 0 -d 0 -u gregnog -p adel13phikos</CommandLineArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

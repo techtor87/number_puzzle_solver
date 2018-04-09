@@ -33,7 +33,7 @@ def init_clues ():
        puzzle_clue_horizontal.append(0)
        puzzle_clue_verticle.append(0)
 
-def start_puzzle(size, diff):
+def start_puzzle(size, diff, user=None, passwd=None):
    if size > 4 or diff > 4 or size < 0 or diff < 0:
       size = 0
       diff = 0
@@ -62,12 +62,20 @@ def start_puzzle(size, diff):
    #ActionChains(driver).key_down(Keys.CONTROL+ '1').key_up(Keys.CONTROL + '1').perform()
    #ActionChains(driver).send_keys(Keys.CONTROL+ '1').perform()
 
+   # If SSO Page
    if "ssologin" in driver.current_url:
       WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "username")))
       driver.find_element_by_id("username").send_keys("210060583")
       driver.find_element_by_id("password").send_keys("adel2018phikos")
       driver.find_element_by_id("password").submit()
 
+   #login to site
+   if user is not None and passwd is not None:
+      driver.find_element_by_name("vb_login_username").send_keys(user)
+      driver.find_element_by_name("vb_login_password").send_keys(passwd)
+      driver.find_element_by_class_name("loginform-submit").click()
+
+   #Select Puzzle Page
    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "sg-slider")))
    size_slider = driver.find_element_by_id("sg-slider")
    difficulty_slider = driver.find_element_by_id("sd-slider")
@@ -77,6 +85,8 @@ def start_puzzle(size, diff):
    ActionChains(driver).drag_and_drop_by_offset(difficulty_slider, 50*(diff-2), 0).perform()
   
    driver.find_element_by_name("CreatePuzzle").click()
+
+   #Confirm Puzzle Page
    driver.find_element_by_name("submit").click()
    
    for y in range(1, puzzle_size+1):
@@ -376,12 +386,8 @@ if __name__ == "__main__":
    parser.add_argument('-u', '--user', required=True)
    parser.add_argument('-p', '--password', required=True)
    args = parser.parse_args() # automatically looks at sys.arvg
-   #
-   # access results with: args.argumentName
-   #
 
-
-   start_puzzle(args.size, args.difficulty)
+   start_puzzle(args.size, args.difficulty, args.user, args.password)
    clues_remaining = 1
    while(clues_remaining > 0):
       #sys.stdout = open('solve_step_{}.txt'.format(i),'w')
