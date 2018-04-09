@@ -20,67 +20,47 @@ def init_solve_table():
       col_index += 1
 
 def solve_guessing(dir, size, clue, line_num):
-   more_than_one_clue = False
-   index = 0
    if line_num >= size:
       return
 
    if (dir != 'r') and (dir != 'c'):
       return
-   
-   while((is_blank(dir,line_num, index)) and index <= size):
-      index += 1
 
-   clue_indx = 0
+   #Guess Forward
+   index = 0
    while clue_indx < len(clue):
-      if more_than_one_clue : # guess blank
-         index += 1
-      else:
-         more_than_one_clue = True
-
       space_for_clue = True
-      for check_i in range(clue[clue_indx]):
-         if is_blank(dir,line_num, index + check_i):
+      for check_indx in range(clue[clue_indx]):
+         if is_blank(dir, line_num, index + check_index):
             space_for_clue = False
+            break
 
       if space_for_clue:
          for i in range(clue[clue_indx]):
-            guess_mark(dir, line_num,index,clue_indx)
+            guess_mark(dir, line_num, index, clue_indx)
             index += 1
          clue_indx += 1
-      #else:
-      #   guess_blank(dir, line_num, index)
-      #   index += 1   
- 
 
+      index += 1 #for blank after clue
+
+   #Guess Reverse
    index = size - 1
-   clue_indx = len(clue) -1
-
-   while((is_blank(dir,line_num, index)) and index <= size):
-      index -= 1
-
-   more_than_one_clue = False
+   clue_indx = len(clue) - 1
    while clue_indx >= 0:
-      if more_than_one_clue :
-         index -= 1
-      else:
-         more_than_one_clue = True
-
       space_for_clue = True
-      for check_i in range(clue[clue_indx]):
-         if is_blank(dir,line_num, index - check_i):
+      for check_indx in range(clue[clue_indx]):
+         if is_blank(dir, line_num, index - check_index):
             space_for_clue = False
+            break
 
       if space_for_clue:
          for i in range(clue[clue_indx]):
-            compare_mark(dir, line_num,index,clue_indx)
+            compare_mark(dir, line_num, index, clue_indx)
             index -= 1
          clue_indx -= 1
-      #else:
-      #   compare_blank(dir, line_num,index) 
 
-   #for indx in range(size):
-   #   compare_mark(dir,line_num, index)
+      index -= 1 #for blank after clue
 
-   for indx in range(size):
-      clear_unknown(dir, line_num,indx)
+   #Clear table of Unknown Values
+   for index in range(size):
+      clear_unknown(dir, line_num, index)
