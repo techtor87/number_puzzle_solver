@@ -390,7 +390,6 @@ if __name__ == "__main__":
    start_puzzle(args.size, args.difficulty, args.user, args.password)
    clues_remaining = 1
    while(clues_remaining > 0):
-      #sys.stdout = open('solve_step_{}.txt'.format(i),'w')
       print "starting loop"
       read_puzzle()
       init_solve_table()
@@ -401,5 +400,3 @@ if __name__ == "__main__":
       clues_remaining = remaining_clues(puzzle_size, puzzle_solve)
       print clues_remaining
       sleep(5)
-
-      #sys.stdout.close()
