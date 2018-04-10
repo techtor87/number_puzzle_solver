@@ -223,4 +223,5 @@ if __name__ == "__main__":
       submit_puzzle()
       clues_remaining = remaining_clues(puzzle_size, puzzle_solve)
       print clues_remaining
+      driver.find_element_by_id("check_button").click()
       sleep(5)
